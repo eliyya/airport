@@ -1,8 +1,8 @@
-import { db } from '@/lib/db'
+import { db, sql } from '@/lib/db'
 
 export default async function flightsPage() {
-    const pilots = await db.pilot.findMany()
-    const bases = await db.base.findMany()
+    const pilots = db.prepare(sql`SELECT * FROM Pilot`).all()
+    const bases = db.prepare(sql`SELECT * FROM Base`).all()
 
     return (
         <div className='flex h-screen flex-col items-center justify-center'>
@@ -17,18 +17,22 @@ export default async function flightsPage() {
                 <input type='datetime-local' name='arrive_time' required />
                 <label htmlFor=''>Piloto</label>
                 <select name='pilot_id' id='' className='*:text-black'>
-                    {pilots.map(function (pilot) {
-                        return (
-                            <option key={pilot.id} value={pilot.id}>
-                                {pilot.name}
-                            </option>
-                        )
-                    })}
+                    {pilots.map(pilot => (
+                        <option
+                            key={pilot.id as string}
+                            value={pilot.id as string}
+                        >
+                            {pilot.name}
+                        </option>
+                    ))}
                 </select>
                 <label htmlFor=''>Base de Salida</label>
                 <select name='from_id' id=''>
                     {bases.map(base => (
-                        <option key={base.id} value={base.id}>
+                        <option
+                            key={base.id as string}
+                            value={base.id as string}
+                        >
                             {base.name}
                         </option>
                     ))}
@@ -36,7 +40,10 @@ export default async function flightsPage() {
                 <label htmlFor=''>Base de Llegada</label>
                 <select name='to_id' id=''>
                     {bases.map(base => (
-                        <option key={base.id} value={base.id}>
+                        <option
+                            key={base.id as string}
+                            value={base.id as string}
+                        >
                             {base.name}
                         </option>
                     ))}

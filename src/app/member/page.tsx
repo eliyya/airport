@@ -1,4 +1,4 @@
-import { createCrew } from '@/actions/crew'
+import { createCrew } from '@/actions/member'
 
 export default async function crewPage() {
     return (
