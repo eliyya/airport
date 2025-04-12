@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pilot {
+  id        Int       @id @default(autoincrement())
+  code      String    @unique
+  name      String
+  hours_fly Int       @default(0)
+  flights   Flights[]
+}
+
+model Crew {
+  id           Int            @id @default(autoincrement())
+  name         String
+  code         String         @unique
+  crew_flights Crew_Flights[]
+}
+
+model Base {
+  id           Int       @id @default(autoincrement())
+  name         String
+  code         String
+  flights_from Flights[] @relation("from")
+  flights_to   Flights[] @relation("to")
+}
+
+model Flights {
+  id             Int      @id @default(autoincrement())
+  departure_time DateTime
+  arrive_time    DateTime
+  from_id        Int
+  to_id          Int
+  pilot_id       Int
+
+  from         Base           @relation("from", fields: [from_id], references: [id])
+  to           Base           @relation("to", fields: [to_id], references: [id])
+  pilot        Pilot          @relation(fields: [pilot_id], references: [id])
+  crew_flights Crew_Flights[]
+}
+
+model Crew_Flights {
+  crew_id   Int
+  flight_id Int
+
+  crew   Crew    @relation(fields: [crew_id], references: [id])
+  flight Flights @relation(fields: [flight_id], references: [id])
+
+  @@id([crew_id, flight_id])
+}
